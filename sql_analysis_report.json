@@ -1,0 +1,127 @@
+{
+  "join_count": 0,
+  "subquery_count": 1,
+  "tables": [
+    "orders",
+    "customers"
+  ],
+  "explain": [
+    [
+      4,
+      0,
+      216,
+      "SCAN c"
+    ],
+    [
+      9,
+      0,
+      0,
+      "CORRELATED SCALAR SUBQUERY 1"
+    ],
+    [
+      14,
+      9,
+      216,
+      "SCAN o"
+    ],
+    [
+      36,
+      0,
+      0,
+      "USE TEMP B-TREE FOR ORDER BY"
+    ]
+  ],
+  "full_query_duration_s": 0.000480300048366189,
+  "timeline": [
+    {
+      "name": "Full query execution",
+      "type": "query",
+      "duration_s": 0.000480300048366189,
+      "detail": "SELECT c.customer_id, c.name,\n    (SELECT COUNT(*) \n        FROM orders o \n        WHERE o.customer_id = c.customer_id) AS order_count\n    FROM customers c\n    WHERE c.city = 'City_5'\n    ORDER BY order_count DESC\n    LIMIT 15"
+    },
+    {
+      "name": "Join orders \u2a1d customers",
+      "type": "join",
+      "duration_s": 2.8900103643536568e-05,
+      "detail": "pairwise join COUNT(*)"
+    },
+    {
+      "name": "Table scan: orders",
+      "type": "table_scan",
+      "duration_s": 4.400033503770828e-06,
+      "detail": "COUNT(*) estimate"
+    },
+    {
+      "name": "Table scan: customers",
+      "type": "table_scan",
+      "duration_s": 2.00001522898674e-06,
+      "detail": "COUNT(*) estimate"
+    },
+    {
+      "name": "(4, 0, 216, 'SCAN c')",
+      "type": "explain_step",
+      "duration_s": 0.0,
+      "detail": "(4, 0, 216, 'SCAN c')"
+    },
+    {
+      "name": "(9, 0, 0, 'CORRELATED SCALAR SUBQUERY 1')",
+      "type": "explain_step",
+      "duration_s": 0.0,
+      "detail": "(9, 0, 0, 'CORRELATED SCALAR SUBQUERY 1')"
+    },
+    {
+      "name": "(14, 9, 216, 'SCAN o')",
+      "type": "explain_step",
+      "duration_s": 0.0,
+      "detail": "(14, 9, 216, 'SCAN o')"
+    },
+    {
+      "name": "(36, 0, 0, 'USE TEMP B-TREE FOR ORDER BY')",
+      "type": "explain_step",
+      "duration_s": 0.0,
+      "detail": "(36, 0, 0, 'USE TEMP B-TREE FOR ORDER BY')"
+    },
+    {
+      "name": "Subquery 1",
+      "type": "subquery",
+      "duration_s": 0.0,
+      "detail": "SELECT COUNT(*) \n        FROM orders o \n        WHERE o.customer_id = c.customer_id"
+    }
+  ],
+  "bottlenecks": [
+    {
+      "name": "Full query execution",
+      "type": "query",
+      "duration_s": 0.000480300048366189,
+      "detail": "SELECT c.customer_id, c.name,\n    (SELECT COUNT(*) \n        FROM orders o \n        WHERE o.customer_id = c.customer_id) AS order_count\n    FROM customers c\n    WHERE c.city = 'City_5'\n    ORDER BY order_count DESC\n    LIMIT 15"
+    },
+    {
+      "name": "Join orders \u2a1d customers",
+      "type": "join",
+      "duration_s": 2.8900103643536568e-05,
+      "detail": "pairwise join COUNT(*)"
+    },
+    {
+      "name": "Table scan: orders",
+      "type": "table_scan",
+      "duration_s": 4.400033503770828e-06,
+      "detail": "COUNT(*) estimate"
+    },
+    {
+      "name": "Table scan: customers",
+      "type": "table_scan",
+      "duration_s": 2.00001522898674e-06,
+      "detail": "COUNT(*) estimate"
+    }
+  ],
+  "table_costs": {
+    "orders": 4.400033503770828e-06,
+    "customers": 2.00001522898674e-06
+  },
+  "join_costs": {
+    "orders<> customers": 2.8900103643536568e-05
+  },
+  "subquery_costs": {
+    "subquery_1": null
+  }
+}
