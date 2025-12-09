@@ -1,0 +1,32 @@
+=== SQL ANALYSIS REPORT ===
+Join count: 3
+Subquery count: 0
+Tables: ['products', 'customers', 'order_items', 'orders']
+Full query duration (s): 0.000712
+
+Top timeline steps (sorted by measured duration):
+ - join       | Join order_items ⨝ orders                                    | 0.002650s
+ - join       | Join products ⨝ order_items                                  | 0.001328s
+ - query      | Full query execution                                         | 0.000712s
+ - join       | Join customers ⨝ order_items                                 | 0.000699s
+ - join       | Join products ⨝ orders                                       | 0.000461s
+ - join       | Join customers ⨝ orders                                      | 0.000226s
+ - join       | Join products ⨝ customers                                    | 0.000138s
+ - table_scan | Table scan: products                                         | 0.000010s
+ - table_scan | Table scan: customers                                        | 0.000005s
+ - table_scan | Table scan: orders                                           | 0.000005s
+
+Bottlenecks:
+ * join - Join order_items ⨝ orders : 0.002650s
+ * join - Join products ⨝ order_items : 0.001328s
+ * query - Full query execution : 0.000712s
+ * join - Join customers ⨝ order_items : 0.000699s
+ * join - Join products ⨝ orders : 0.000461s
+
+EXPLAIN QUERY PLAN (raw):
+   (11, 0, 216, 'SCAN oi')
+   (13, 0, 45, 'SEARCH o USING INTEGER PRIMARY KEY (rowid=?)')
+   (16, 0, 45, 'SEARCH p USING INTEGER PRIMARY KEY (rowid=?)')
+   (22, 0, 45, 'SEARCH c USING INTEGER PRIMARY KEY (rowid=?)')
+   (25, 0, 0, 'USE TEMP B-TREE FOR GROUP BY')
+   (75, 0, 0, 'USE TEMP B-TREE FOR ORDER BY')

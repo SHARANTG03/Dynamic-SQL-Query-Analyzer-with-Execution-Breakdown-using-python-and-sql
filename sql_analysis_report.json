@@ -1,127 +1,200 @@
 {
-  "join_count": 0,
-  "subquery_count": 1,
+  "join_count": 3,
+  "subquery_count": 0,
   "tables": [
     "orders",
+    "order_items",
+    "products",
     "customers"
   ],
   "explain": [
     [
-      4,
+      11,
       0,
       216,
-      "SCAN c"
+      "SCAN oi"
     ],
     [
-      9,
+      13,
+      0,
+      45,
+      "SEARCH o USING INTEGER PRIMARY KEY (rowid=?)"
+    ],
+    [
+      18,
+      0,
+      45,
+      "SEARCH c USING INTEGER PRIMARY KEY (rowid=?)"
+    ],
+    [
+      23,
+      0,
+      45,
+      "SEARCH p USING INTEGER PRIMARY KEY (rowid=?)"
+    ],
+    [
+      29,
       0,
       0,
-      "CORRELATED SCALAR SUBQUERY 1"
+      "USE TEMP B-TREE FOR GROUP BY"
     ],
     [
-      14,
-      9,
-      216,
-      "SCAN o"
-    ],
-    [
-      36,
+      81,
       0,
       0,
       "USE TEMP B-TREE FOR ORDER BY"
     ]
   ],
-  "full_query_duration_s": 0.000480300048366189,
+  "full_query_duration_s": 0.0008142001461237669,
   "timeline": [
+    {
+      "name": "Join orders \u2a1d products",
+      "type": "join",
+      "duration_s": 0.009311999892815948,
+      "detail": "pairwise join COUNT(*)"
+    },
+    {
+      "name": "Join order_items \u2a1d customers",
+      "type": "join",
+      "duration_s": 0.007733599981293082,
+      "detail": "pairwise join COUNT(*)"
+    },
+    {
+      "name": "Join products \u2a1d customers",
+      "type": "join",
+      "duration_s": 0.0009684998076409101,
+      "detail": "pairwise join COUNT(*)"
+    },
     {
       "name": "Full query execution",
       "type": "query",
-      "duration_s": 0.000480300048366189,
-      "detail": "SELECT c.customer_id, c.name,\n    (SELECT COUNT(*) \n        FROM orders o \n        WHERE o.customer_id = c.customer_id) AS order_count\n    FROM customers c\n    WHERE c.city = 'City_5'\n    ORDER BY order_count DESC\n    LIMIT 15"
+      "duration_s": 0.0008142001461237669,
+      "detail": "SELECT c.customer_id, c.name, o.order_id, SUM(oi.quantity * oi.unit_price) AS order_total\n    FROM customers c\n    JOIN orders o ON c.customer_id = o.customer_id\n    JOIN order_items oi ON o.order_id = oi.order_id\n    JOIN products p ON oi.product_id = p.product_id\n    WHERE p.price > 20\n        AND c.city = 'City_1'\n        AND o.order_date >= '2025-11-01'\n    GROUP BY o.order_id\n    HAVING order"
+    },
+    {
+      "name": "Join order_items \u2a1d products",
+      "type": "join",
+      "duration_s": 0.0006886001210659742,
+      "detail": "pairwise join COUNT(*)"
+    },
+    {
+      "name": "Join orders \u2a1d order_items",
+      "type": "join",
+      "duration_s": 0.00033030007034540176,
+      "detail": "pairwise join COUNT(*)"
     },
     {
       "name": "Join orders \u2a1d customers",
       "type": "join",
-      "duration_s": 2.8900103643536568e-05,
+      "duration_s": 9.979982860386372e-05,
       "detail": "pairwise join COUNT(*)"
+    },
+    {
+      "name": "Table scan: order_items",
+      "type": "table_scan",
+      "duration_s": 1.500011421740055e-05,
+      "detail": "COUNT(*) estimate"
     },
     {
       "name": "Table scan: orders",
       "type": "table_scan",
-      "duration_s": 4.400033503770828e-06,
+      "duration_s": 1.4599878340959549e-05,
+      "detail": "COUNT(*) estimate"
+    },
+    {
+      "name": "Table scan: products",
+      "type": "table_scan",
+      "duration_s": 6.800051778554916e-06,
       "detail": "COUNT(*) estimate"
     },
     {
       "name": "Table scan: customers",
       "type": "table_scan",
-      "duration_s": 2.00001522898674e-06,
+      "duration_s": 5.500158295035362e-06,
       "detail": "COUNT(*) estimate"
     },
     {
-      "name": "(4, 0, 216, 'SCAN c')",
+      "name": "(11, 0, 216, 'SCAN oi')",
       "type": "explain_step",
       "duration_s": 0.0,
-      "detail": "(4, 0, 216, 'SCAN c')"
+      "detail": "(11, 0, 216, 'SCAN oi')"
     },
     {
-      "name": "(9, 0, 0, 'CORRELATED SCALAR SUBQUERY 1')",
+      "name": "(13, 0, 45, 'SEARCH o USING INTEGER PRIMARY KEY (rowid=?)')",
       "type": "explain_step",
       "duration_s": 0.0,
-      "detail": "(9, 0, 0, 'CORRELATED SCALAR SUBQUERY 1')"
+      "detail": "(13, 0, 45, 'SEARCH o USING INTEGER PRIMARY KEY (rowid=?)')"
     },
     {
-      "name": "(14, 9, 216, 'SCAN o')",
+      "name": "(18, 0, 45, 'SEARCH c USING INTEGER PRIMARY KEY (rowid=?)')",
       "type": "explain_step",
       "duration_s": 0.0,
-      "detail": "(14, 9, 216, 'SCAN o')"
+      "detail": "(18, 0, 45, 'SEARCH c USING INTEGER PRIMARY KEY (rowid=?)')"
     },
     {
-      "name": "(36, 0, 0, 'USE TEMP B-TREE FOR ORDER BY')",
+      "name": "(23, 0, 45, 'SEARCH p USING INTEGER PRIMARY KEY (rowid=?)')",
       "type": "explain_step",
       "duration_s": 0.0,
-      "detail": "(36, 0, 0, 'USE TEMP B-TREE FOR ORDER BY')"
+      "detail": "(23, 0, 45, 'SEARCH p USING INTEGER PRIMARY KEY (rowid=?)')"
     },
     {
-      "name": "Subquery 1",
-      "type": "subquery",
+      "name": "(29, 0, 0, 'USE TEMP B-TREE FOR GROUP BY')",
+      "type": "explain_step",
       "duration_s": 0.0,
-      "detail": "SELECT COUNT(*) \n        FROM orders o \n        WHERE o.customer_id = c.customer_id"
+      "detail": "(29, 0, 0, 'USE TEMP B-TREE FOR GROUP BY')"
+    },
+    {
+      "name": "(81, 0, 0, 'USE TEMP B-TREE FOR ORDER BY')",
+      "type": "explain_step",
+      "duration_s": 0.0,
+      "detail": "(81, 0, 0, 'USE TEMP B-TREE FOR ORDER BY')"
     }
   ],
   "bottlenecks": [
     {
-      "name": "Full query execution",
-      "type": "query",
-      "duration_s": 0.000480300048366189,
-      "detail": "SELECT c.customer_id, c.name,\n    (SELECT COUNT(*) \n        FROM orders o \n        WHERE o.customer_id = c.customer_id) AS order_count\n    FROM customers c\n    WHERE c.city = 'City_5'\n    ORDER BY order_count DESC\n    LIMIT 15"
-    },
-    {
-      "name": "Join orders \u2a1d customers",
+      "name": "Join orders \u2a1d products",
       "type": "join",
-      "duration_s": 2.8900103643536568e-05,
+      "duration_s": 0.009311999892815948,
       "detail": "pairwise join COUNT(*)"
     },
     {
-      "name": "Table scan: orders",
-      "type": "table_scan",
-      "duration_s": 4.400033503770828e-06,
-      "detail": "COUNT(*) estimate"
+      "name": "Join order_items \u2a1d customers",
+      "type": "join",
+      "duration_s": 0.007733599981293082,
+      "detail": "pairwise join COUNT(*)"
     },
     {
-      "name": "Table scan: customers",
-      "type": "table_scan",
-      "duration_s": 2.00001522898674e-06,
-      "detail": "COUNT(*) estimate"
+      "name": "Join products \u2a1d customers",
+      "type": "join",
+      "duration_s": 0.0009684998076409101,
+      "detail": "pairwise join COUNT(*)"
+    },
+    {
+      "name": "Full query execution",
+      "type": "query",
+      "duration_s": 0.0008142001461237669,
+      "detail": "SELECT c.customer_id, c.name, o.order_id, SUM(oi.quantity * oi.unit_price) AS order_total\n    FROM customers c\n    JOIN orders o ON c.customer_id = o.customer_id\n    JOIN order_items oi ON o.order_id = oi.order_id\n    JOIN products p ON oi.product_id = p.product_id\n    WHERE p.price > 20\n        AND c.city = 'City_1'\n        AND o.order_date >= '2025-11-01'\n    GROUP BY o.order_id\n    HAVING order"
+    },
+    {
+      "name": "Join order_items \u2a1d products",
+      "type": "join",
+      "duration_s": 0.0006886001210659742,
+      "detail": "pairwise join COUNT(*)"
     }
   ],
   "table_costs": {
-    "orders": 4.400033503770828e-06,
-    "customers": 2.00001522898674e-06
+    "orders": 1.4599878340959549e-05,
+    "order_items": 1.500011421740055e-05,
+    "products": 6.800051778554916e-06,
+    "customers": 5.500158295035362e-06
   },
   "join_costs": {
-    "orders<> customers": 2.8900103643536568e-05
+    "orders<> order_items": 0.00033030007034540176,
+    "orders<> products": 0.009311999892815948,
+    "orders<> customers": 9.979982860386372e-05,
+    "order_items<> products": 0.0006886001210659742,
+    "order_items<> customers": 0.007733599981293082,
+    "products<> customers": 0.0009684998076409101
   },
-  "subquery_costs": {
-    "subquery_1": null
-  }
+  "subquery_costs": {}
 }

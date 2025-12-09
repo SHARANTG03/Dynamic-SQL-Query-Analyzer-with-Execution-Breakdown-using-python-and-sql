@@ -1,0 +1,104 @@
+{
+    "sql": "SELECT c.customer_id, c.name, SUM(oi.quantity * oi.unit_price) AS total_spent\nFROM customers c\nJOIN orders o ON c.customer_id = o.customer_id\nJOIN order_items oi ON o.order_id = oi.order_id\nJOIN products p ON oi.product_id = p.product_id\nWHERE p.price > 15\nGROUP BY c.customer_id\nHAVING total_spent > 200\nORDER BY total_spent DESC\nLIMIT 10;",
+    "join_count": 3,
+    "subquery_count": 0,
+    "tables": [
+        "products",
+        "customers",
+        "order_items",
+        "orders"
+    ],
+    "execution_time": 0.0007119178771972656,
+    "timeline": [
+        {
+            "name": "Join order_items ⨝ orders",
+            "type": "join",
+            "duration": 0.0026502609252929688
+        },
+        {
+            "name": "Join products ⨝ order_items",
+            "type": "join",
+            "duration": 0.0013275146484375
+        },
+        {
+            "name": "Full query execution",
+            "type": "query",
+            "duration": 0.0007119178771972656
+        },
+        {
+            "name": "Join customers ⨝ order_items",
+            "type": "join",
+            "duration": 0.0006985664367675781
+        },
+        {
+            "name": "Join products ⨝ orders",
+            "type": "join",
+            "duration": 0.0004611015319824219
+        },
+        {
+            "name": "Join customers ⨝ orders",
+            "type": "join",
+            "duration": 0.0002257823944091797
+        },
+        {
+            "name": "Join products ⨝ customers",
+            "type": "join",
+            "duration": 0.00013780593872070312
+        },
+        {
+            "name": "Table scan: products",
+            "type": "table_scan",
+            "duration": 1.049041748046875e-05
+        },
+        {
+            "name": "Table scan: customers",
+            "type": "table_scan",
+            "duration": 5.245208740234375e-06
+        },
+        {
+            "name": "Table scan: orders",
+            "type": "table_scan",
+            "duration": 5.0067901611328125e-06
+        },
+        {
+            "name": "Table scan: order_items",
+            "type": "table_scan",
+            "duration": 4.76837158203125e-06
+        }
+    ],
+    "bottlenecks": [
+        {
+            "name": "Join order_items ⨝ orders",
+            "type": "join",
+            "duration": 0.0026502609252929688
+        },
+        {
+            "name": "Join products ⨝ order_items",
+            "type": "join",
+            "duration": 0.0013275146484375
+        },
+        {
+            "name": "Full query execution",
+            "type": "query",
+            "duration": 0.0007119178771972656
+        },
+        {
+            "name": "Join customers ⨝ order_items",
+            "type": "join",
+            "duration": 0.0006985664367675781
+        },
+        {
+            "name": "Join products ⨝ orders",
+            "type": "join",
+            "duration": 0.0004611015319824219
+        }
+    ],
+    "explain": [
+        "(11, 0, 216, 'SCAN oi')",
+        "(13, 0, 45, 'SEARCH o USING INTEGER PRIMARY KEY (rowid=?)')",
+        "(16, 0, 45, 'SEARCH p USING INTEGER PRIMARY KEY (rowid=?)')",
+        "(22, 0, 45, 'SEARCH c USING INTEGER PRIMARY KEY (rowid=?)')",
+        "(25, 0, 0, 'USE TEMP B-TREE FOR GROUP BY')",
+        "(75, 0, 0, 'USE TEMP B-TREE FOR ORDER BY')"
+    ]
+}
